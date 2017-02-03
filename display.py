@@ -35,15 +35,20 @@ class Main(Widget):
         self.initialise()
 
         self.generateExperimentSequence(self.session_folder)
-        self.showSplash(self.title)
+        self.showSplash()
 
     def initialise(self):
         self.autorun = False
         self.current_pair = 0
         self.title = "TITLE HERE"
+        self.version_no = "0.1alpha"
         self.session_folder = "./session-1"
-        self.session_name = "session 1"
+        self.session_name = "session-1"
+        self.view_duration = 5
+        self.break_duration = 3
+        self.vote_duration = 10
         self.datetime = time.strftime("%d/%m/%y %H:%M:%S")
+        self.session_filename = self.session_name+"-"+time.strftime("%y-%m-%d-%M-%H")+".txt"
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -51,8 +56,10 @@ class Main(Widget):
         
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if (self.autorun):
+            print "[CONTROL] Autorun is OFF"
             self.autorun = False
         else:
+            print "[CONTROL] Autorun is ON"
             self.autorun = True
             self.mainLoopForward()
                     
@@ -73,9 +80,11 @@ class Main(Widget):
         if (not self.autorun):
             self.drawText("Autorun is off. Press any key to continue..", self.image_size/25,40,40,0.5,0.5,0.5,1)
         
-    def showSplash(self,title):
+    def showSplash(self):
+        self.consoleSplash()
+        
         self.canvas.clear()
-        self.drawText(title,self.image_size/15,50,2*self.max_height/3,1,1,1,1)
+        self.drawText(self.title,self.image_size/15,50,2*self.max_height/3,1,1,1,1)
         self.drawText("Double Stimulus Impairment Scale Test (DSIST)", self.image_size/20,50,self.max_height/2,0.8,0.8,0.8,1)
         self.drawText("DSIST Evaluation Test Bench. Copyright 2017 Wattanit Hotrakool. (Licensed under GNU GPL 3)", self.image_size/40,50,50,0.6,0.3,0.3,1)
         self.drawText(self.datetime, 30, self.max_width-300, self.max_height-70,0.5,0.5,0.5,1)
@@ -92,6 +101,27 @@ class Main(Widget):
         texture_size = list(texture.size)
         with self.canvas:
             Rectangle(texture=texture, pos=(x,y), size=texture_size)
+
+    def consoleSplash(self):
+        print "===================================="
+        print "    DSIST Evaluation Test Bench     "
+        print "                                    "
+        print " Version: "+self.version_no
+        print " Copyright 2017 Wattanit Hotrakool  "
+        print "                                    "
+        print " This software is released under    "
+        print " GNU General Public License v3.0    "
+        print "===================================="
+        print "Command key:"
+        print " ESC : quit "
+        print "  d  : show demo "
+        print "  s  : setting (unavailable)"
+        print "  r  : restart (unavailable)"
+        print " Any other key : forward"
+        print "===================================="
+        print " Session name: "+self.session_name
+        print " Date/time   : "+self.datetime
+        print " Session sequence will be saved at "+ self.session_folder+"/"+self.session_filename
         
 
     def generateExperimentSequence(self, PATH):
@@ -119,29 +149,47 @@ class Main(Widget):
         self.current_pair = self.current_pair+1
         if (len(self.experiment_sequence) < 1):
             self.autorun = False
+            print "[DISPLAY] End of Session"
             self.showEnd()
             return
+        if (self.current_pair==1):
+            record_file = open(self.session_folder+"/"+self.session_filename,"w")
+            record_file.write("DSIST Experiment sequence\n")
+            record_file.write("Title: "+self.title+"\n")
+            record_file.write("Session name: "+self.session_name+"\n")
+            record_file.write("Date/time: "+self.datetime+"\n")
+            record_file.write("---------------------------------------------\n")
+        else:
+            record_file = open(self.session_folder+"/"+self.session_filename,"a")
+            
         pair = self.experiment_sequence.pop()
         self.mediaA = pair[0]
         self.mediaB = pair[1]
         self.next_media = "A"
-        event_1 = Clock.schedule_once(self.mainLoopDelay,0) # A
-        event_2 = Clock.schedule_once(self.mainLoopDelay,5) # Blank
-        event_3 = Clock.schedule_once(self.mainLoopDelay,8) # B
-        event_4 = Clock.schedule_once(self.mainLoopDelay,13)# Blank
-        event_5 = Clock.schedule_once(self.mainLoopDelay,16)# A
-        event_6 = Clock.schedule_once(self.mainLoopDelay,21)# Blank
-        event_7 = Clock.schedule_once(self.mainLoopDelay,24)# B
-        event_8 = Clock.schedule_once(self.mainLoopBreak,29)# End pair
+
+        record_file.write(str(self.current_pair)+" "+self.mediaA+" "+self.mediaB+"\n")
+        record_file.close()
+        
+        event_1 = Clock.schedule_once(self.mainLoopDisplay,0) # A
+        event_2 = Clock.schedule_once(self.mainLoopDisplay,self.view_duration) # Blank
+        event_3 = Clock.schedule_once(self.mainLoopDisplay,self.view_duration+self.break_duration) # B
+        event_4 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+self.break_duration)# Blank
+        event_5 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+2*self.break_duration)# A
+        event_6 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+2*self.break_duration)# Blank
+        event_7 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+3*self.break_duration)# B
+        event_8 = Clock.schedule_once(self.mainLoopBreak,4*self.view_duration+3*self.break_duration)# End pair
                 
-    def mainLoopDelay(self,dt):
+    def mainLoopDisplay(self,dt):
         if (self.next_media == "A"):
+            print "[DISPLAY] No: "+str(self.current_pair)+self.next_media+" | "+self.mediaA
             self.showImage(self.mediaA)
             self.next_media = "AtoB"
         elif (self.next_media == "B"):
+            print "[DISPLAY] No: "+str(self.current_pair)+self.next_media+" | "+self.mediaB
             self.showImage(self.mediaB)
             self.next_media = "BtoA"
         else:
+            print "[DISPLAY] No: "+str(self.current_pair)+self.next_media+" | Blank ..."
             self.showBlank()
             if (self.next_media=="AtoB"):
                 self.next_media = "B"
@@ -150,9 +198,9 @@ class Main(Widget):
 
     def mainLoopBreak(self,dt):
         self.showVote()
-        print "Please vote now"
+        print "[DISPLAY] No: "+str(self.current_pair)+" | VOTING SCREEN"
         if (self.autorun):
-            event = Clock.schedule_once(self.mainLoopRestart,10)
+            event = Clock.schedule_once(self.mainLoopRestart,self.vote_duration)
 
     def mainLoopRestart(self,dt):
         self.mainLoopForward()
