@@ -44,7 +44,7 @@ class Main(Widget):
         self.version_no = "0.1alpha"
         self.session_folder = "./session-1"
         self.session_name = "session-1"
-        self.view_duration = 5
+        self.view_duration = 7
         self.break_duration = 3
         self.vote_duration = 10
         self.datetime = time.strftime("%d/%m/%y %H:%M:%S")
@@ -199,7 +199,7 @@ class Main(Widget):
 
             for item in set_files:
                 l = [PATH+"/"+samples_set+"/original.bmp", PATH+"/"+samples_set+"/"+item]
-                random.shuffle(l)
+#                random.shuffle(l)  # random pair order between original and impaired
                 self.experiment_sequence.append(l)
 
         random.shuffle(self.experiment_sequence)
@@ -232,11 +232,11 @@ class Main(Widget):
         event_1 = Clock.schedule_once(self.mainLoopDisplay,0) # A
         event_2 = Clock.schedule_once(self.mainLoopDisplay,self.view_duration) # Blank
         event_3 = Clock.schedule_once(self.mainLoopDisplay,self.view_duration+self.break_duration) # B
-        event_4 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+self.break_duration)# Blank
-        event_5 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+2*self.break_duration)# A
-        event_6 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+2*self.break_duration)# Blank
-        event_7 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+3*self.break_duration)# B
-        event_8 = Clock.schedule_once(self.mainLoopBreak,4*self.view_duration+3*self.break_duration)# End pair
+#        event_4 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+self.break_duration)# Blank
+#        event_5 = Clock.schedule_once(self.mainLoopDisplay,2*self.view_duration+2*self.break_duration)# A
+#        event_6 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+2*self.break_duration)# Blank
+#        event_7 = Clock.schedule_once(self.mainLoopDisplay,3*self.view_duration+3*self.break_duration)# B
+        event_8 = Clock.schedule_once(self.mainLoopBreak,2*self.view_duration+self.break_duration)# End pair
                 
     def mainLoopDisplay(self,dt):
         if (self.next_media == "A"):
