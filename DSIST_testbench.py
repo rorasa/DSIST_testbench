@@ -126,6 +126,7 @@ class Main(Widget):
         print " Session name: "+self.session_name
         print " Date/time   : "+self.datetime
         print " Session sequence will be saved at "+ self.session_folder+"/"+self.session_filename
+        print " Total number of test pairs: "+str(len(self.experiment_sequence))
 
     def showDemo(self,dt):
         if (dt < 0):
