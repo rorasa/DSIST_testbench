@@ -55,6 +55,10 @@ class Main(Widget):
         self._keyboard = None
         
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if (keycode[1]=="d"):
+            self.showDemo(-1)
+            return
+        
         if (self.autorun):
             print "[CONTROL] Autorun is OFF"
             self.autorun = False
@@ -122,7 +126,62 @@ class Main(Widget):
         print " Session name: "+self.session_name
         print " Date/time   : "+self.datetime
         print " Session sequence will be saved at "+ self.session_folder+"/"+self.session_filename
-        
+
+    def showDemo(self,dt):
+        if (dt < 0):
+            self.demo_step = 0
+
+        print self.demo_step
+        if (self.demo_step==9):
+            self.showSplash()
+            return
+            
+        self.canvas.clear()
+        self.drawText("Guideline for evaluation", self.image_size/20,50,self.max_height*9/10,1,1,1,1)
+        if (self.demo_step==0):
+            self.demo_step = self.demo_step+1
+            self.drawText("Please rate the quality of image B relative to image A.", self.image_size/20,70,self.max_height*8/10,1,1,1,1)
+            self.drawText("81-100: difference is imperceptible", self.image_size/20,70,self.max_height*7/10,1,1,1,1)
+            self.drawText("61-80: difference is perceptible but not annoying", self.image_size/20,70,self.max_height*6/10,1,1,1,1)
+            self.drawText("41-60: slightly annoying", self.image_size/20,70,self.max_height*5/10,1,1,1,1)
+            self.drawText("21-40: annoying", self.image_size/20,70,self.max_height*4/10,1,1,1,1)
+            self.drawText("1-20 : very annoying", self.image_size/20,70,self.max_height*3/10,1,1,1,1)
+            event = Clock.schedule_once(self.showDemo,10)
+        elif (self.demo_step==1):
+            self.canvas.add(Rectangle(source="./demo/demo1.bmp", pos=(self.margin,0), size=(self.image_size*9/10,self.image_size*9/10)))
+            self.drawText("A", self.image_size/20, 50, self.max_height*7/10,0.8,0.8,0.8,1)
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.view_duration)            
+        elif (self.demo_step==2):
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.break_duration)            
+        elif (self.demo_step==3):
+            self.canvas.add(Rectangle(source="./demo/demo2.bmp", pos=(self.margin,0), size=(self.image_size*9/10,self.image_size*9/10)))
+            self.drawText("B", self.image_size/20, 50, self.max_height*7/10,0.8,0.8,0.8,1)
+            self.demo_step = self.demo_step+1 
+            event = Clock.schedule_once(self.showDemo,self.view_duration)           
+        elif (self.demo_step==4):
+            self.drawText("Vote: 0 - 20", self.image_size/20, self.max_width/3, self.max_height/2,1,1,1,1)
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.vote_duration)            
+        elif (self.demo_step==5):
+            self.canvas.add(Rectangle(source="./demo/demo1.bmp", pos=(self.margin,0), size=(self.image_size*9/10,self.image_size*9/10)))
+            self.drawText("A", self.image_size/20, 50, self.max_height*7/10,0.8,0.8,0.8,1)
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.view_duration)            
+        elif (self.demo_step==6):
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.break_duration)            
+        elif (self.demo_step==7):
+            self.canvas.add(Rectangle(source="./demo/demo3.bmp", pos=(self.margin,0), size=(self.image_size*9/10,self.image_size*9/10)))
+            self.drawText("B", self.image_size/20, 50, self.max_height*7/10,0.8,0.8,0.8,1)
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.view_duration)            
+        elif (self.demo_step==8):
+            self.drawText("Vote: 80 - 100", self.image_size/20, self.max_width/3, self.max_height/2,1,1,1,1)
+            self.demo_step = self.demo_step+1
+            event = Clock.schedule_once(self.showDemo,self.vote_duration)
+               
 
     def generateExperimentSequence(self, PATH):
         self.experiment_sequence = []
