@@ -178,7 +178,7 @@ class Main(Widget):
             self.demo_step = self.demo_step+1
             event = Clock.schedule_once(self.showDemo,self.view_duration)            
         elif (self.demo_step==8):
-            self.drawText("Vote: 80 - 100", self.image_size/20, self.max_width/3, self.max_height/2,1,1,1,1)
+            self.drawText("Vote: 61 - 80", self.image_size/20, self.max_width/3, self.max_height/2,1,1,1,1)
             self.demo_step = self.demo_step+1
             event = Clock.schedule_once(self.showDemo,self.vote_duration)
                
